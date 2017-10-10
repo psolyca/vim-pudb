@@ -9,8 +9,8 @@ if exists('g:loaded_pudb_plugin') || &cp
 endif
 let g:loaded_pudb_plugin = 1
 
-if !has("python3")
-    echo "Error: Required vim compiled with +python3"
+if !has("python")
+    echo "Error: Required vim compiled with +python"
     finish
 endif
 
@@ -26,6 +26,7 @@ augroup pudb
 augroup end
 
 command! TogglePudbBreakPoint call s:ToggleBreakPoint()
+command! ClearPudbBreakPoints call s:ClearPudbBreakPoints()
 
 function! s:UpdateBreakPoints()
 
@@ -40,7 +41,7 @@ endfor
 let b:pudb_sign_ids = []
 
 
-python3 << EOF
+python << EOF
 import vim
 import os
 import subprocess
@@ -62,7 +63,7 @@ EOF
 endfunction
 
 function! s:ToggleBreakPoint()
-python3 << EOF
+python << EOF
 import vim
 
 filename = vim.eval('expand("%:p")')
@@ -76,3 +77,15 @@ vim.command('call s:UpdateBreakPoints()')
 EOF
 endfunction
 
+function! s:ClearPudbBreakPoints()
+python << EOF
+import vim
+
+scriptname = os.path.join(vim.eval('s:plugin_dir'), 'clear_breakpoints.py')
+proc = subprocess.Popen(['python', scriptname])             
+proc.wait()
+
+vim.command('call s:UpdateBreakPoints()')
+EOF
+
+endfunction
