@@ -65,6 +65,8 @@ endfunction
 function! s:ToggleBreakPoint()
 python << EOF
 import vim
+import os
+import subprocess
 
 filename = vim.eval('expand("%:p")')
 row, col = vim.current.window.cursor
