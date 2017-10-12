@@ -28,8 +28,23 @@ augroup end
 command! TogglePudbBreakPoint call s:ToggleBreakPoint()
 command! ClearPudbBreakPoints call s:ClearPudbBreakPoints()
 
+function! s:Checkpudb()
+    
+if executable('pudb')
+    if $VIRTUAL_ENV == ""
+       echo "vim-pudb will be functionnal"
+       echo "but pudb must be installed in your virtual environnement to work properly"
+    endif
+else
+    echo "You need to install pudb to be able to use vim-pudb plugin."
+    echo "If you use a virtual environment, pudb must be installed in it." 
+    return 1 
+endif
+endfunction
+
 function! s:UpdateBreakPoints()
 
+if (s:Checkpudb() == 1) | return | endif
 " first remove existing signs
 if !exists("b:pudb_sign_ids")
     let b:pudb_sign_ids = []
@@ -63,6 +78,7 @@ EOF
 endfunction
 
 function! s:ToggleBreakPoint()
+if (s:Checkpudb() == 1) | return | endif
 python << EOF
 import vim
 import os
@@ -80,6 +96,7 @@ EOF
 endfunction
 
 function! s:ClearPudbBreakPoints()
+if (s:Checkpudb() == 1) | return | endif
 python << EOF
 import vim
 
